@@ -73,7 +73,8 @@ public class Book {
                 + "id=" + id
                 + ", title='" + title
                 + '\'' + ", author='" + author + '\''
-                + ", isbn='" + isbn + '\''
+                + ", isbn='" + isbn
+                + '\''
                 + ", price=" + price
                 + ", description='" + description + '\''
                 + ", coverImage='" + coverImage + '\''
