@@ -6,9 +6,11 @@ import model.Book;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.stereotype.Repository;
 import repository.BookRepository;
 import util.HibernateUtil;
 
+@Repository
 public class BookRepositoryImpl implements BookRepository {
     @Override
     public Book save(Book book) {

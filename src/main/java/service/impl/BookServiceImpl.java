@@ -2,12 +2,14 @@ package service.impl;
 
 import java.util.List;
 import model.Book;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.impl.BookRepositoryImpl;
 import service.BookService;
 
 @Service
 public class BookServiceImpl implements BookService {
+    @Autowired
     private BookRepositoryImpl bookRepository;
 
     @Override
