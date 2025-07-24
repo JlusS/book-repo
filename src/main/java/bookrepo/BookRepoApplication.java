@@ -1,9 +1,11 @@
 package bookrepo;
 
+import config.AppConfig;
 import java.math.BigDecimal;
 import model.Book;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import service.BookService;
 import service.impl.BookServiceImpl;
 
@@ -18,7 +20,20 @@ public class BookRepoApplication {
         book.setIsbn("isbn");
         book.setPrice(new BigDecimal(232424));
         book.setTitle("Yeet");
-        BookService bookService = new BookServiceImpl();
+        Book book1 = new Book();
+        book.setAuthor("TestBookAuthor1");
+        book.setCoverImage("JPEG_is_bad_idea1");
+        book.setDescription("idk1");
+        book.setIsbn("isbn1");
+        book.setPrice(new BigDecimal(2324248));
+        book.setTitle("Yeet1");
+
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        BookService bookService = context.getBean(BookService.class);
+
         bookService.save(book);
+        bookService.save(book1);
+
+
     }
 }
