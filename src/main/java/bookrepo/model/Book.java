@@ -1,92 +1,56 @@
 package bookrepo.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
-@Table(name = "books")
+@Table(name = "books", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "isbn")
+})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Title must not be blank")
+    @Size(max = 255)
+    @Column(nullable = false)
     private String title;
+
+    @NotBlank(message = "Author must not be blank")
+    @Size(max = 255)
+    @Column(nullable = false)
     private String author;
+
+    @NotBlank(message = "ISBN must not be blank")
+    @Size(max = 13)
+    @Column(nullable = false, unique = true)
     private String isbn;
+
+    @NotNull(message = "Price must not be null")
+    @DecimalMin(value = "0.0", inclusive = false)
+    @Digits(integer = 10, fraction = 2)
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Size(max = 1000)
     private String description;
+
+    @Size(max = 255)
     private String coverImage;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCoverImage() {
-        return coverImage;
-    }
-
-    public void setCoverImage(String coverImage) {
-        this.coverImage = coverImage;
-    }
-
-    @Override
-    public String toString() {
-        return "Book{"
-                + "id=" + id
-                + ", title='" + title
-                + '\'' + ", author='" + author + '\''
-                + ", isbn='" + isbn
-                + '\''
-                + ", price=" + price
-                + ", description='" + description + '\''
-                + ", coverImage='" + coverImage + '\''
-                + '}';
-    }
 }
