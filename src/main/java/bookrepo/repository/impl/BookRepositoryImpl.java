@@ -5,6 +5,7 @@ import bookrepo.repository.BookRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookRepositoryImpl implements BookRepository {
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    public BookRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Book save(Book book) {
