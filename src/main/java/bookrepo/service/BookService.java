@@ -1,7 +1,7 @@
-package service;
+package bookrepo.service;
 
+import bookrepo.model.Book;
 import java.util.List;
-import model.Book;
 
 public interface BookService {
     public Book save(Book book);
