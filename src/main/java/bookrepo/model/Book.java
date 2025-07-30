@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -26,6 +27,7 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
+    @ToString.Exclude
     @Column(nullable = false, unique = true)
     private String isbn;
 
