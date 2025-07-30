@@ -6,16 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
-import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@Table(name = "books")
 @Entity
-@Table(name = "books", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "isbn")
-})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,6 @@ public class Book {
     @Column(nullable = false)
     private String author;
 
-    @ToString.Exclude
     @Column(nullable = false, unique = true)
     private String isbn;
 

@@ -1,5 +1,6 @@
 package bookrepo.repository.impl;
 
+import bookrepo.exception.DataProcessingException;
 import bookrepo.model.Book;
 import bookrepo.repository.BookRepository;
 import jakarta.persistence.EntityManager;
@@ -18,8 +19,7 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Book save(Book book) {
         EntityTransaction transaction = null;
-        try {
-            EntityManager entityManager = entityManagerFactory.createEntityManager();
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             transaction = entityManager.getTransaction();
             transaction.begin();
             entityManager.persist(book);
@@ -29,7 +29,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            throw new RuntimeException("Can't save the book " + book, e);
+            throw new DataProcessingException("Can't save the book " + book, e);
         }
     }
 
@@ -38,6 +38,8 @@ public class BookRepositoryImpl implements BookRepository {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
             Book book = entityManager.find(Book.class, id);
             return Optional.ofNullable(book);
+        } catch (Exception e) {
+            throw new DataProcessingException("Can't find book with id: " + id, e);
         }
     }
 
@@ -47,7 +49,7 @@ public class BookRepositoryImpl implements BookRepository {
             return entityManager.createQuery("SELECT b FROM Book b", Book.class)
                     .getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Can't find books", e);
+            throw new DataProcessingException("Can't find books", e);
         }
     }
 }
