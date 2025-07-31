@@ -21,13 +21,16 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
-        book.setIsbn(String.valueOf(new Random().nextInt(1000000000)));
-        return bookMapper.toDto(bookRepository.save(book));
+        book.setIsbn(String.valueOf(new Random().nextInt(100_000_000)));
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDto(savedBook);
     }
 
     @Override
     public List<BookDto> findAll() {
-        return bookRepository.findAll().stream().map(bookMapper::toDto)
+        return bookRepository.findAll()
+                .stream()
+                .map(bookMapper::toDto)
                 .toList();
     }
 
