@@ -6,15 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@Table(name = "books")
 @Entity
-@Table(name = "books", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "isbn")
-})
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
