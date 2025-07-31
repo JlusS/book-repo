@@ -8,7 +8,6 @@ import bookrepo.model.Book;
 import bookrepo.repository.BookRepository;
 import bookrepo.service.BookService;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
