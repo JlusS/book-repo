@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
-    private final static String AUTHOR = "author";
-    private final static String TITLE = "title";
-    private final static String ISBN = "isbn";
-    private final static String DESCRIPTION = "description";
-    private final static String COVER_IMAGE = "coverImage";
-    private final static String PRICE = "price";
+    private static final String AUTHOR = "author";
+    private static final String TITLE = "title";
+    private static final String ISBN = "isbn";
+    private static final String DESCRIPTION = "description";
+    private static final String COVER_IMAGE = "coverImage";
+    private static final String PRICE = "price";
     private final SpecificationProviderManager<Book> bookSpecificationProviderManager;
 
     @Override
