@@ -4,9 +4,7 @@ import bookrepo.dto.BookDto;
 import bookrepo.dto.BookSearchParameters;
 import bookrepo.dto.CreateBookRequestDto;
 import bookrepo.service.BookService;
-import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
-import java.lang.reflect.Constructor;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.method.ControllerAdviceBean;
 
 @RequiredArgsConstructor
 @RestController
@@ -60,21 +57,5 @@ public class BookController {
     public BookDto updateBook(@PathVariable Long id,
                               @RequestBody @Valid CreateBookRequestDto requestDto) {
         return bookService.update(id, requestDto);
-    }
-
-    @PostConstruct
-    public void checkSpringVersion() {
-        try {
-            Constructor<?> constructor = Class.forName(
-                    "org.springframework.web.method.ControllerAdviceBean")
-                    .getConstructor(Object.class);
-            System.out.println("✅ ControllerAdviceBean constructor found: " + constructor);
-        } catch (Exception e) {
-            System.err.println("❌ ControllerAdviceBean constructor missing: " + e);
-        } finally {
-            System.out.println("Loaded from: "
-                    + ControllerAdviceBean.class.getProtectionDomain()
-                    .getCodeSource().getLocation());
-        }
     }
 }
