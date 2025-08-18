@@ -1,4 +1,4 @@
-package bookrepo.dto;
+package bookrepo.dto.book;
 
 public record BookSearchParameters(String[] authors,
                                    String[] titles,

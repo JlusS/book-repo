@@ -1,8 +1,8 @@
 package bookrepo.service;
 
-import bookrepo.dto.BookDto;
-import bookrepo.dto.BookSearchParameters;
-import bookrepo.dto.CreateBookRequestDto;
+import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.BookSearchParameters;
+import bookrepo.dto.book.CreateBookRequestDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

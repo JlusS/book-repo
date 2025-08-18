@@ -1,8 +1,8 @@
 package bookrepo.service.impl;
 
-import bookrepo.dto.BookDto;
-import bookrepo.dto.BookSearchParameters;
-import bookrepo.dto.CreateBookRequestDto;
+import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.BookSearchParameters;
+import bookrepo.dto.book.CreateBookRequestDto;
 import bookrepo.exception.EntityNotFoundException;
 import bookrepo.mapper.BookMapper;
 import bookrepo.model.Book;
