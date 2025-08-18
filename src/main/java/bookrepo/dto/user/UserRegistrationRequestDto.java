@@ -10,7 +10,7 @@ import org.hibernate.validator.constraints.Length;
 @PasswordMatches
 public class UserRegistrationRequestDto {
     private static final int MIN_PASSWORD_LENGTH = 8;
-    private static final int MAX_PASSWORD_LENGTH = 16;
+    private static final int MAX_PASSWORD_LENGTH = 32;
 
     @NotBlank
     @Email

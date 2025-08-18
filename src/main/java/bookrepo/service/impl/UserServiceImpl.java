@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
             throws RegistrationException {
-        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-            throw new RegistrationException("User with this email already exists");
+        if (userRepository.existsByEmail(requestDto.getEmail())) {
+            throw new RegistrationException("User with this email: " + requestDto.getEmail() + " already exists");
         }
         User user = new User();
         user.setEmail(requestDto.getEmail());
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(requestDto.getFirstName());
         user.setLastName(requestDto.getLastName());
         user.setShippingAddress(requestDto.getShippingAddress());
-        User savedUser = userRepository.save(user);
-        return userMapper.toUserResponseDto(savedUser);
+        userRepository.save(user);
+        return userMapper.toUserResponseDto(user);
     }
 }
