@@ -37,8 +37,6 @@ databaseChangeLog:
               - column:
                   name: shipping_address
                   type: varchar(255)
-                  constraints:
-                    nullable: true
               - column:
                   name: is_deleted
                   type: bit(1)
