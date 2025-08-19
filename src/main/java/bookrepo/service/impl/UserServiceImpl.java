@@ -8,6 +8,7 @@ import bookrepo.model.User;
 import bookrepo.repository.user.UserRepository;
 import bookrepo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
                     + " already exists");
         }
         User user = userMapper.toUserModel(requestDto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponseDto(savedUser);
 
