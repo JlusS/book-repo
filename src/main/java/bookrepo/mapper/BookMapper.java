@@ -1,8 +1,8 @@
 package bookrepo.mapper;
 
 import bookrepo.config.MapperConfig;
-import bookrepo.dto.BookDto;
-import bookrepo.dto.CreateBookRequestDto;
+import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.CreateBookRequestDto;
 import bookrepo.model.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

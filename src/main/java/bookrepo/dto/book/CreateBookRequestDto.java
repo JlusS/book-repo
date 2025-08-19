@@ -1,4 +1,4 @@
-package bookrepo.dto;
+package bookrepo.dto.book;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;

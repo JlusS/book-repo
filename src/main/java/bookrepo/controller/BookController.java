@@ -1,8 +1,8 @@
 package bookrepo.controller;
 
-import bookrepo.dto.BookDto;
-import bookrepo.dto.BookSearchParameters;
-import bookrepo.dto.CreateBookRequestDto;
+import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.BookSearchParameters;
+import bookrepo.dto.book.CreateBookRequestDto;
 import bookrepo.service.BookService;
 import jakarta.validation.Valid;
 import java.util.List;
