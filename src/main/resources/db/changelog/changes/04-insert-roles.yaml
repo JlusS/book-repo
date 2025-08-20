@@ -26,7 +26,6 @@ databaseChangeLog:
       id: assign-roles-to-users
       author: JlusS
       changes:
-        # Назначаем роль ADMIN пользователю с email 'admin@test.com'
         - sql:
             comment: Назначить роль ADMIN пользователю admin@test.com
             splitStatements: false
@@ -37,8 +36,6 @@ databaseChangeLog:
               FROM users u
               JOIN roles r ON r.name = 'ADMIN'
               WHERE u.email = 'admin@test.com';
-
-        # Назначаем роль USER всем остальным пользователям
         - sql:
             comment: Назначить роль USER всем пользователям, кроме admin@test.com
             splitStatements: false
