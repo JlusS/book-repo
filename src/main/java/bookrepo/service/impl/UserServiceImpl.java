@@ -2,6 +2,7 @@ package bookrepo.service.impl;
 
 import bookrepo.dto.user.UserRegistrationRequestDto;
 import bookrepo.dto.user.UserResponseDto;
+import bookrepo.exception.EntityNotFoundException;
 import bookrepo.exception.RegistrationException;
 import bookrepo.mapper.UserMapper;
 import bookrepo.model.Role;
@@ -37,9 +38,8 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toUserModel(requestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role userRole = roleRepository.findByName(RoleName.USER)
-                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role USER not found"));
         user.setRoles(Set.of(userRole));
-
         userRepository.save(user);
         return userMapper.toUserResponseDto(user);
     }
