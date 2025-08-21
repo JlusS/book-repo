@@ -27,7 +27,6 @@ databaseChangeLog:
       author: JlusS
       changes:
         - sql:
-            comment: Назначить роль ADMIN пользователю admin@test.com
             splitStatements: false
             stripComments: true
             sql: |
@@ -37,7 +36,6 @@ databaseChangeLog:
               JOIN roles r ON r.name = 'ADMIN'
               WHERE u.email = 'admin@test.com';
         - sql:
-            comment: Назначить роль USER всем пользователям, кроме admin@test.com
             splitStatements: false
             stripComments: true
             sql: |
