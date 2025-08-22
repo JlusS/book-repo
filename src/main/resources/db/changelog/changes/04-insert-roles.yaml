@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-roles
+      author: JlusS
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
+                  name: name
+                  value: ADMIN
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
+              - column:
+                  name: name
+                  value: USER
+
+  - changeSet:
+      id: assign-roles-to-users
+      author: JlusS
+      changes:
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              INSERT INTO users_roles (user_id, role_id)
+              SELECT u.id, r.id
+              FROM users u
+              JOIN roles r ON r.name = 'ADMIN'
+              WHERE u.email = 'admin@test.com';
+        - sql:
+            splitStatements: false
+            stripComments: true
+            sql: |
+              INSERT INTO users_roles (user_id, role_id)
+              SELECT u.id, r.id
+              FROM users u
+              JOIN roles r ON r.name = 'USER'
+              WHERE u.email != 'admin@test.com';
