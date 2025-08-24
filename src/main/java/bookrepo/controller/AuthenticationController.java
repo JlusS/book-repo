@@ -1,8 +1,11 @@
 package bookrepo.controller;
 
+import bookrepo.dto.user.UserLoginRequestDto;
+import bookrepo.dto.user.UserLoginResponseDto;
 import bookrepo.dto.user.UserRegistrationRequestDto;
 import bookrepo.dto.user.UserResponseDto;
 import bookrepo.exception.RegistrationException;
+import bookrepo.security.AuthenticationService;
 import bookrepo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authentication", description = "Endpoints for user registration and authentication")
 public class AuthenticationController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
     @Operation(summary = "Register a new user", description =
@@ -26,6 +30,11 @@ public class AuthenticationController {
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {
         return userService.register(requestDto);
+    }
+
+    @PostMapping("/login")
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
+        return authenticationService.authenticate(requestDto);
     }
 }
 
