@@ -9,6 +9,7 @@ import bookrepo.model.Book;
 import bookrepo.repository.book.BookRepository;
 import bookrepo.repository.book.BookSpecificationBuilder;
 import bookrepo.service.BookService;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
