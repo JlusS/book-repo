@@ -1,13 +1,16 @@
 package bookrepo.service.impl;
 
 import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.BookDtoWithoutCategoryIds;
 import bookrepo.dto.book.BookSearchParameters;
 import bookrepo.dto.book.CreateBookRequestDto;
 import bookrepo.exception.EntityNotFoundException;
 import bookrepo.mapper.BookMapper;
 import bookrepo.model.Book;
+import bookrepo.model.Category;
 import bookrepo.repository.book.BookRepository;
 import bookrepo.repository.book.BookSpecificationBuilder;
+import bookrepo.repository.category.CategoryRepository;
 import bookrepo.service.BookService;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -23,6 +26,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
@@ -63,6 +67,17 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findAll(bookSpecificationBuilder.build(params))
                 .stream()
                 .map(bookMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Category not found with id: " + id));
+        List<Book> books = bookRepository.findAllByCategories_Id(id);
+        return books.stream()
+                .map(bookMapper::toDtoWithoutCategories)
                 .toList();
     }
 }
