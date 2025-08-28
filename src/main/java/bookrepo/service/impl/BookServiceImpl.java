@@ -13,7 +13,10 @@ import bookrepo.repository.book.BookSpecificationBuilder;
 import bookrepo.repository.category.CategoryRepository;
 import bookrepo.service.BookService;
 import jakarta.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,9 +34,13 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
         Book book = bookMapper.toModel(requestDto);
+        Set<Category> categories = new HashSet<>(categoryRepository.findAllById(requestDto.getCategoryIds()));
+        book.setCategories(categories);
+
         bookRepository.save(book);
         return bookMapper.toDto(book);
     }
+
 
     @Override
     public Page<BookDto> findAll(Pageable pageable) {
@@ -52,10 +59,15 @@ public class BookServiceImpl implements BookService {
     public BookDto update(Long id, CreateBookRequestDto requestDto) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can't find book by id: " + id));
+
         bookMapper.updateModelFromDto(requestDto, book);
+        Set<Category> categories = new HashSet<>(categoryRepository.findAllById(requestDto.getCategoryIds()));
+        book.setCategories(categories);
+
         bookRepository.save(book);
         return bookMapper.toDto(book);
     }
+
 
     @Override
     public void deleteById(Long id) {
