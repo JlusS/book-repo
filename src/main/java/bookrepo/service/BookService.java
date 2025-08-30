@@ -1,6 +1,7 @@
 package bookrepo.service;
 
 import bookrepo.dto.book.BookDto;
+import bookrepo.dto.book.BookDtoWithoutCategoryIds;
 import bookrepo.dto.book.BookSearchParameters;
 import bookrepo.dto.book.CreateBookRequestDto;
 import java.util.List;
@@ -19,4 +20,6 @@ public interface BookService {
     void deleteById(Long id);
 
     List<BookDto> search(BookSearchParameters params);
+
+    List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long id);
 }

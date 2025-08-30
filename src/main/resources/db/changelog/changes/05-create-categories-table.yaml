@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-categories-table
+      author: JlusS
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: is_deleted
+                  type: tinyint(1)
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: create-books-categories-table
+      author: JlusS
+      changes:
+        - createTable:
+            tableName: books_categories
+            columns:
+              - column:
+                  name: book_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: books_categories
+            columnNames: book_id, category_id
+        - addForeignKeyConstraint:
+            baseTableName: books_categories
+            baseColumnNames: book_id
+            referencedTableName: books
+            referencedColumnNames: id
+            constraintName: fk_books_categories_book
+        - addForeignKeyConstraint:
+            baseTableName: books_categories
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_books_categories_category

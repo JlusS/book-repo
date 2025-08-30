@@ -1,0 +1,7 @@
+package bookrepo.repository.category;
+
+import bookrepo.model.Category;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CategoryRepository extends JpaRepository<Category, Long> {
+}
