@@ -1,7 +1,7 @@
 package bookrepo.mapper;
 
 import bookrepo.dto.cartitem.CartItemDto;
-import bookrepo.dto.shoppingcart.AddToCartRequestDto;
+import bookrepo.dto.cartitem.CreateCartItemDto;
 import bookrepo.model.CartItem;
 import bookrepo.repository.book.BookRepository;
 import org.mapstruct.Context;
@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 public interface CartItemMapper {
 
     @Mapping(source = "bookId", target = "book", qualifiedByName = "bookFromId")
-    CartItem toModel(AddToCartRequestDto dto, @Context BookRepository bookRepository);
+    CartItem toModel(CreateCartItemDto dto, @Context BookRepository bookRepository);
 
     @Mapping(source = "book.id", target = "bookId")
     @Mapping(source = "book.title", target = "bookTitle")

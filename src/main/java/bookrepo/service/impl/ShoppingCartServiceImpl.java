@@ -1,7 +1,8 @@
 package bookrepo.service.impl;
 
-import bookrepo.dto.shoppingcart.AddToCartRequestDto;
+import bookrepo.dto.cartitem.CreateCartItemDto;
 import bookrepo.dto.shoppingcart.ShoppingCartDto;
+import bookrepo.dto.shoppingcart.UpdateCarItemQuantityDto;
 import bookrepo.exception.EntityNotFoundException;
 import bookrepo.mapper.ShoppingCartMapper;
 import bookrepo.model.Book;
@@ -28,30 +29,28 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final AuthenticationService authenticationService;
     private final BookRepository bookRepository;
     private final CartItemRepository cartItemRepository;
-    private final bookrepo.mapper.CartItemMapper cartItemMapper;
 
     @Override
     public ShoppingCartDto getShoppingCart() {
         User user = authenticationService.getAuthenticatedUser();
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Shopping cart not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Shopping cart not found for user id: "
+                        + user.getId()));
         return shoppingCartMapper.toDto(cart);
     }
 
     @Override
-    public ShoppingCartDto save(AddToCartRequestDto requestDto) {
+    public ShoppingCartDto save(CreateCartItemDto requestDto) {
         User user = authenticationService.getAuthenticatedUser();
 
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
-                .orElseGet(() -> {
-                    ShoppingCart newCart = new ShoppingCart();
-                    newCart.setUser(user);
-                    newCart.setCartItems(new HashSet<>());
-                    return shoppingCartRepository.save(newCart);
-                });
+                .orElseGet(() -> createShoppingCartForUser(user));
 
         Book book = bookRepository.findById(requestDto.getBookId())
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Book: "
+                        + requestDto.getBookId()
+                        + " not found"));
 
         Optional<CartItem> existingItem = cart.getCartItems().stream()
                 .filter(item -> item.getBook().getId().equals(book.getId()))
@@ -68,33 +67,37 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             cart.getCartItems().add(newItem);
         }
 
-        ShoppingCart updatedCart = shoppingCartRepository.save(cart);
-
-        return shoppingCartMapper.toDto(updatedCart);
+        shoppingCartRepository.save(cart);
+        return shoppingCartMapper.toDto(cart);
     }
 
     @Override
-    public ShoppingCartDto update(Long cartItemId, int quantity) {
+    public ShoppingCartDto update(Long cartItemId, UpdateCarItemQuantityDto quantity) {
         User user = authenticationService.getAuthenticatedUser();
 
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Shopping cart not found"));
 
-        CartItem cartItem = cart.getCartItems().stream()
-                .filter(item -> item.getId().equals(cartItemId))
-                .findFirst()
+        CartItem cartItem = cartItemRepository.findByIdAndShoppingCartId(cartItemId, cart.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Cart item not found"));
 
-        cartItem.setQuantity(quantity);
+        cartItem.setQuantity(quantity.getQuantity());
 
-        ShoppingCart updatedCart = shoppingCartRepository.save(cart);
+        shoppingCartRepository.save(cart);
 
-        return shoppingCartMapper.toDto(updatedCart);
+        return shoppingCartMapper.toDto(cart);
     }
 
     @Override
     public void deleteById(Long cartItemId) {
         cartItemRepository.deleteById(cartItemId);
+    }
+
+    private ShoppingCart createShoppingCartForUser(User user) {
+        ShoppingCart newCart = new ShoppingCart();
+        newCart.setUser(user);
+        newCart.setCartItems(new HashSet<>());
+        return shoppingCartRepository.save(newCart);
     }
 
 }

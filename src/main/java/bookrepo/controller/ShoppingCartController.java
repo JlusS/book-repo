@@ -1,7 +1,8 @@
 package bookrepo.controller;
 
-import bookrepo.dto.shoppingcart.AddToCartRequestDto;
+import bookrepo.dto.cartitem.CreateCartItemDto;
 import bookrepo.dto.shoppingcart.ShoppingCartDto;
+import bookrepo.dto.shoppingcart.UpdateCarItemQuantityDto;
 import bookrepo.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +36,7 @@ public class ShoppingCartController {
     @Operation(summary = "Add a book to the shopping cart")
     @PostMapping
     @PreAuthorize("hasAuthority('USER')")
-    public ShoppingCartDto addToCart(@RequestBody @Valid AddToCartRequestDto requestDto) {
+    public ShoppingCartDto addToCart(@RequestBody @Valid CreateCartItemDto requestDto) {
         return shoppingCartService.save(requestDto);
     }
 
@@ -43,7 +44,7 @@ public class ShoppingCartController {
     @PutMapping("/cart-items/{cartItemId}")
     @PreAuthorize("hasAuthority('USER')")
     public ShoppingCartDto updateCartItem(@PathVariable Long cartItemId,
-                                          @RequestParam int quantity) {
+                                          @RequestParam UpdateCarItemQuantityDto quantity) {
         return shoppingCartService.update(cartItemId, quantity);
     }
 

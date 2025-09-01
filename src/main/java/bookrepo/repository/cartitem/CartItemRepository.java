@@ -1,6 +1,7 @@
 package bookrepo.repository.cartitem;
 
 import bookrepo.model.CartItem;
+import java.util.Optional;
 import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +15,6 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("SELECT ci FROM CartItem ci JOIN FETCH ci.book WHERE ci.shoppingCart.id = :cartId")
     Set<CartItem> findByCartIdWithBook(@Param("cartId") Long cartId);
 
+    Optional<CartItem> findByIdAndShoppingCartId(Long id, Long shoppingCartId);
 }
 

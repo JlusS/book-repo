@@ -1,14 +1,15 @@
 package bookrepo.service;
 
-import bookrepo.dto.shoppingcart.AddToCartRequestDto;
+import bookrepo.dto.cartitem.CreateCartItemDto;
 import bookrepo.dto.shoppingcart.ShoppingCartDto;
+import bookrepo.dto.shoppingcart.UpdateCarItemQuantityDto;
 
 public interface ShoppingCartService {
     ShoppingCartDto getShoppingCart();
 
-    ShoppingCartDto save(AddToCartRequestDto requestDto);
+    ShoppingCartDto save(CreateCartItemDto requestDto);
 
-    ShoppingCartDto update(Long id, int quantity);
+    ShoppingCartDto update(Long id, UpdateCarItemQuantityDto quantity);
 
     void deleteById(Long id);
 
