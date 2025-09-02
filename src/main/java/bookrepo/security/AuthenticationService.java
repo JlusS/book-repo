@@ -43,6 +43,5 @@ public class AuthenticationService {
                         "User with ID " + userDetails.getId() + " not found"));
     }
 
-
 }
 
