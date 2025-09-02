@@ -44,13 +44,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         User user = authenticationService.getAuthenticatedUser();
 
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
-                .orElseGet(() -> {
-                    createShoppingCartForUser(user);
-                    return shoppingCartRepository.findByUserId(user.getId())
-                            .orElseThrow(() -> new EntityNotFoundException(
-                                    "Shopping cart not found for user id: "
-                                    + user.getId()));
-                });
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Shopping cart not found for user id: "
+                                + user.getId()));
 
         Book book = bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Book: "
@@ -81,10 +77,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         User user = authenticationService.getAuthenticatedUser();
 
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Shopping cart not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Shopping cart not found for user id: " + user.getId()));
 
         CartItem cartItem = cartItemRepository.findByIdAndShoppingCartId(cartItemId, cart.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cart item not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Cart item not found for id: " + cartItemId));
 
         cartItem.setQuantity(quantity.getQuantity());
 
@@ -98,7 +94,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItemRepository.deleteById(cartItemId);
     }
 
-    private void createShoppingCartForUser(User user) {
+    @Override
+    public void createShoppingCartForUser(User user) {
         ShoppingCart newCart = new ShoppingCart();
         newCart.setUser(user);
         shoppingCartRepository.save(newCart);

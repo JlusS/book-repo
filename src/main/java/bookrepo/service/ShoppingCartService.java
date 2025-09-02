@@ -3,6 +3,7 @@ package bookrepo.service;
 import bookrepo.dto.cartitem.CreateCartItemDto;
 import bookrepo.dto.shoppingcart.ShoppingCartDto;
 import bookrepo.dto.shoppingcart.UpdateCarItemQuantityDto;
+import bookrepo.model.User;
 
 public interface ShoppingCartService {
     ShoppingCartDto getShoppingCart();
@@ -13,4 +14,5 @@ public interface ShoppingCartService {
 
     void deleteById(Long id);
 
+    void createShoppingCartForUser(User user);
 }

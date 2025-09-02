@@ -33,16 +33,16 @@ public class AuthenticationService {
     }
 
     public User getAuthenticatedUser() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
+        User userDetails = (User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
 
         return userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UsernameNotFoundException("User with ID "
-                        + userDetails.getId()
-                        + " not found"));
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "User with ID " + userDetails.getId() + " not found"));
     }
+
 
 }
 
