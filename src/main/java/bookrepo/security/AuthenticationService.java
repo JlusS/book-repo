@@ -33,9 +33,16 @@ public class AuthenticationService {
     }
 
     public User getAuthenticatedUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User: " + email + " not found"));
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UsernameNotFoundException("User with ID "
+                        + userDetails.getId()
+                        + " not found"));
     }
+
 }
 

@@ -30,7 +30,7 @@ public class CartItem {
     private Book book;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shopping_cart_id")
+    @JoinColumn(name = "shopping_cart_id", nullable = false)
     private ShoppingCart shoppingCart;
 
     @Column(nullable = false)

@@ -2,11 +2,12 @@ package bookrepo.model;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +22,7 @@ public class ShoppingCart {
     @Id
     private Long id;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;

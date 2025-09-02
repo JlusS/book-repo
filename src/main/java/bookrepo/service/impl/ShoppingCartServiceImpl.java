@@ -15,7 +15,6 @@ import bookrepo.repository.shoppingcart.ShoppingCartRepository;
 import bookrepo.security.AuthenticationService;
 import bookrepo.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
-import java.util.HashSet;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         User user = authenticationService.getAuthenticatedUser();
 
         ShoppingCart cart = shoppingCartRepository.findByUserId(user.getId())
-                .orElseGet(() -> createShoppingCartForUser(user));
+                .orElseGet(() -> {
+                    createShoppingCartForUser(user);
+                    return shoppingCartRepository.findByUserId(user.getId())
+                            .orElseThrow(() -> new EntityNotFoundException(
+                                    "Shopping cart not found for user id: "
+                                    + user.getId()));
+                });
 
         Book book = bookRepository.findById(requestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException("Book: "
@@ -93,11 +98,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItemRepository.deleteById(cartItemId);
     }
 
-    private ShoppingCart createShoppingCartForUser(User user) {
+    private void createShoppingCartForUser(User user) {
         ShoppingCart newCart = new ShoppingCart();
         newCart.setUser(user);
-        newCart.setCartItems(new HashSet<>());
-        return shoppingCartRepository.save(newCart);
+        shoppingCartRepository.save(newCart);
     }
 
 }

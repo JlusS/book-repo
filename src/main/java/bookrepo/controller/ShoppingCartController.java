@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Shopping Cart", description = "Endpoints for managing user's shopping cart")
@@ -44,7 +43,7 @@ public class ShoppingCartController {
     @PutMapping("/cart-items/{cartItemId}")
     @PreAuthorize("hasAuthority('USER')")
     public ShoppingCartDto updateCartItem(@PathVariable Long cartItemId,
-                                          @RequestParam UpdateCarItemQuantityDto quantity) {
+                                          @RequestBody @Valid UpdateCarItemQuantityDto quantity) {
         return shoppingCartService.update(cartItemId, quantity);
     }
 
