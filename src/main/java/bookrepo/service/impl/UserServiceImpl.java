@@ -10,6 +10,7 @@ import bookrepo.model.RoleName;
 import bookrepo.model.User;
 import bookrepo.repository.role.RoleRepository;
 import bookrepo.repository.user.UserRepository;
+import bookrepo.service.ShoppingCartService;
 import bookrepo.service.UserService;
 import jakarta.transaction.Transactional;
 import java.util.Set;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
                         + RoleName.USER
                         + "' not found"));
         user.setRoles(Set.of(userRole));
+        shoppingCartService.createShoppingCartForUser(user);
         userRepository.save(user);
         return userMapper.toUserResponseDto(user);
     }
