@@ -23,7 +23,7 @@ public class AuthenticationService {
     public UserLoginResponseDto authenticate(UserLoginRequestDto requestDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        requestDto.getName(),
+                        requestDto.getEmail(),
                         requestDto.getPassword()
                 )
         );

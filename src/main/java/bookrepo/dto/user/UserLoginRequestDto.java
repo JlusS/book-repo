@@ -15,7 +15,7 @@ public class UserLoginRequestDto {
     @NotBlank
     @Size(min = MIN_LENGTH, max = MAX_LENGTH)
     @Email
-    private String name;
+    private String email;
     @NotBlank
     @Size(min = MIN_LENGTH, max = MAX_LENGTH)
     private String password;
