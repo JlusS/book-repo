@@ -2,10 +2,14 @@ package bookrepo.security;
 
 import bookrepo.dto.user.UserLoginRequestDto;
 import bookrepo.dto.user.UserLoginResponseDto;
+import bookrepo.exception.EntityNotFoundException;
+import bookrepo.model.User;
+import bookrepo.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,11 +18,12 @@ public class AuthenticationService {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
 
     public UserLoginResponseDto authenticate(UserLoginRequestDto requestDto) {
-        final Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        requestDto.getName(),
+                        requestDto.getEmail(),
                         requestDto.getPassword()
                 )
         );
@@ -26,4 +31,17 @@ public class AuthenticationService {
         String token = jwtUtil.generateToken(authentication.getName());
         return new UserLoginResponseDto(token);
     }
+
+    public User getAuthenticatedUser() {
+        User userDetails = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "User with ID " + userDetails.getId() + " not found"));
+    }
+
 }
+
