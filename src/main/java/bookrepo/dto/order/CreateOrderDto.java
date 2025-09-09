@@ -1,15 +1,10 @@
 package bookrepo.dto.order;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class CreateOrderDto {
+    @NotBlank
     private String shippingAddress;
-    @NotNull
-    @Positive
-    private Long bookId;
-    @Positive
-    private Integer quantity;
 }

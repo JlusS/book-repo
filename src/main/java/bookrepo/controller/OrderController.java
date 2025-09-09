@@ -8,6 +8,7 @@ import bookrepo.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,12 +53,12 @@ public class OrderController {
         return orderService.update(orderDto);
     }
 
-    @GetMapping("/{id}/items")
+    @GetMapping("/{orderId}/items")
     @PreAuthorize("hasAuthority('USER')")
     @Operation(summary = "Get order items by order ID", description =
             "Returns all items for a specific order. Accessible by USER.")
-    public OrderItemDto getOrderItems(@PathVariable Long id) {
-        return orderService.findByOrderId(id);
+    public List<OrderItemDto> getOrderItems(@PathVariable Long orderId) {
+        return orderService.findByOrderId(orderId);
     }
 
     @GetMapping("/{orderId}/items/{itemId}")

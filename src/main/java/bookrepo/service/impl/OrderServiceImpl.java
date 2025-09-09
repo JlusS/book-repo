@@ -16,10 +16,14 @@ import bookrepo.repository.order.OrderItemRepository;
 import bookrepo.repository.order.OrderRepository;
 import bookrepo.security.AuthenticationService;
 import bookrepo.service.OrderService;
+import bookrepo.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +39,7 @@ public class OrderServiceImpl implements OrderService {
     private final BookRepository bookRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderItemMapper orderItemMapper;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public Page<OrderDto> getAllOrders(Pageable pageable) {
@@ -47,24 +52,35 @@ public class OrderServiceImpl implements OrderService {
         User user = authenticationService.getAuthenticatedUser();
 
         Order order = orderRepository.findUserById(user.getId())
-                .orElseGet(() -> createOrder(user, orderDto));
+                .orElseGet(() -> {
+                    Order newOrder = new Order();
+                    newOrder.setUser(user);
+                    newOrder.setShippingAddress(orderDto.getShippingAddress());
+                    newOrder.setStatus(Order.Status.PENDING);
+                    newOrder.setOrderDate(LocalDateTime.now());
+                    return newOrder;
+                });
 
-        Book book = bookRepository.findById(order.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Book: "
-                        + orderDto.getBookId()
-                        + " not found"));
+        Set<OrderItem> orderItems = shoppingCartService.getShoppingCart().getCartItems().stream()
+                .map(cartItem -> {
+                    Book book = bookRepository.findById(cartItem.getBookId())
+                            .orElseThrow(() -> new EntityNotFoundException(
+                                    "Book not found with id: " + cartItem.getBookId()));
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setOrder(order);
+                    orderItem.setBook(book);
+                    orderItem.setQuantity(cartItem.getQuantity());
+                    orderItem.setPrice(book.getPrice());
+                    return orderItem;
+                }).collect(Collectors.toSet());
 
-        Optional<OrderItem> existingOrderItem = order.getOrderItems().stream()
-                .filter(item -> item.getBook().getId().equals(book.getId()))
-                .findFirst();
+        order.getOrderItems().clear();
+        order.getOrderItems().addAll(orderItems);
 
-        if (existingOrderItem.isPresent()) {
-            existingOrderItem.get().setQuantity(
-                    existingOrderItem.get().getQuantity()
-                    + orderDto.getQuantity());
-        } else {
-            createOrderItem(book,order, orderDto);
-        }
+        BigDecimal total = orderItems.stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setTotal(total);
 
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -86,16 +102,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItemDto findByOrderId(Long id) {
-        return orderItemRepository.findById(id)
-                .map(orderItemMapper::toDto).orElseThrow(() -> new EntityNotFoundException(
-                        "Order item not found for id: "
-                        + id));
+    public List<OrderItemDto> findByOrderId(Long orderId) {
+        return orderItemRepository.findAllByOrderId(orderId).stream()
+                .map(orderItemMapper::toDto)
+                .toList();
     }
 
     @Override
     public OrderItemDto findSpecificOrderItem(Long orderId, Long itemId) {
-        OrderItem item = orderItemRepository.findByIdAndOrderId(orderId, itemId);
+        User user = authenticationService.getAuthenticatedUser();
+        OrderItem item = Optional.ofNullable(
+                orderItemRepository.findByIdAndOrderIdAndUserId(orderId, itemId, user.getId())
+        ).orElseThrow(() -> new EntityNotFoundException("Order item not found"));
         return orderItemMapper.toDto(item);
     }
 
@@ -104,32 +122,16 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.deleteById(id);
     }
 
-    @Override
     public Order createOrder(User user, CreateOrderDto orderDto) {
         Order order = new Order();
         order.setUser(user);
         order.setShippingAddress(orderDto.getShippingAddress());
         order.setStatus(Order.Status.PENDING);
         order.setOrderDate(LocalDateTime.now());
-        order.setTotal(calculateTotal(order));
+        order.setTotal(order.getOrderItems().stream()
+                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
         orderRepository.save(order);
         return order;
-    }
-
-    @Override
-    public void createOrderItem(Book book, Order order, CreateOrderDto orderDto) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setBook(book);
-        orderItem.setQuantity(orderDto.getQuantity());
-        orderItem.setOrder(order);
-        orderItem.setPrice(book.getPrice());
-        order.getOrderItems().add(orderItem);
-    }
-
-    @Override
-    public BigDecimal calculateTotal(Order order) {
-        return order.getOrderItems().stream()
-                .map(item -> item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }
