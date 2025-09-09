@@ -21,7 +21,6 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +110,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderItemDto findSpecificOrderItem(Long orderId, Long itemId) {
         User user = authenticationService.getAuthenticatedUser();
-        OrderItem item = orderItemRepository.findByIdAndOrderIdAndUserId(orderId, itemId, user.getId());
+        OrderItem item = orderItemRepository
+                .findByIdAndOrderIdAndUserId(orderId, itemId, user.getId());
         return orderItemMapper.toDto(item);
     }
 
