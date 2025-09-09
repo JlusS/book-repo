@@ -111,9 +111,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderItemDto findSpecificOrderItem(Long orderId, Long itemId) {
         User user = authenticationService.getAuthenticatedUser();
-        OrderItem item = Optional.ofNullable(
-                orderItemRepository.findByIdAndOrderIdAndUserId(orderId, itemId, user.getId())
-        ).orElseThrow(() -> new EntityNotFoundException("Order item not found"));
+        OrderItem item = orderItemRepository.findByIdAndOrderIdAndUserId(orderId, itemId, user.getId());
         return orderItemMapper.toDto(item);
     }
 
