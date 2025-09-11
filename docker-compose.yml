@@ -1,0 +1,17 @@
+name: bookrepo
+
+services:
+  db:
+    container_name: ${CONTAINER_NAME}
+    image: mysql:${MYSQLDB_VERSION}
+    restart: always
+    ports:
+      - "${MYSQLDB_PORT}:${MYSQLDB_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQLDB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQLDB_DATABASE}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent", "-h", "localhost", "-u", "${MYSQLDB_USER}", "-p${MYSQLDB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

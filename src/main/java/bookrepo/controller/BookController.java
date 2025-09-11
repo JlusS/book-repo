@@ -58,6 +58,7 @@ public class BookController {
     @Operation(summary = "Create a new book", description = "Adds a new book to the repository")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
+
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
