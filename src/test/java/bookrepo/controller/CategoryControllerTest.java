@@ -1,5 +1,14 @@
 package bookrepo.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import bookrepo.dto.category.CategoryDto;
 import bookrepo.service.BookService;
 import bookrepo.service.CategoryService;
@@ -16,14 +25,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -68,7 +69,9 @@ class CategoryControllerTest {
                 .andReturn();
 
         // Then
-        CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), CategoryDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected.getId(), actual.getId());
         Assertions.assertEquals(expected.getName(), actual.getName());
@@ -102,7 +105,9 @@ class CategoryControllerTest {
                 .andReturn();
 
         // Then
-        CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), CategoryDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.getId());
         Assertions.assertEquals(expected.getName(), actual.getName());
@@ -136,7 +141,9 @@ class CategoryControllerTest {
                 .andReturn();
 
         // Then
-        CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), CategoryDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected.getName(), actual.getName());
         Assertions.assertEquals(expected.getDescription(), actual.getDescription());

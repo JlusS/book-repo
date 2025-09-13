@@ -44,15 +44,14 @@ public class BookServiceTest {
     @Mock
     private BookSpecificationBuilder bookSpecificationBuilder;
 
-
     @InjectMocks
     private BookServiceImpl bookService;
 
     @Test
     @DisplayName("""
-        Should save a book when save is called with valid request DTO
-        and return the corresponding BookDto with correct category IDs
-    """)
+            Should save a book when save is called with valid request DTO
+            and return the corresponding BookDto with correct category IDs
+            """)
     void save_withValidRequest_returnsBookDtoWithCategoryIds() {
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
         requestDto.setTitle("Effective Java");
@@ -102,7 +101,7 @@ public class BookServiceTest {
     @DisplayName("""
             Should show all books when findAll is called with valid pageable
             and return the corresponding Page of BookDto
-    """)
+            """)
     void findAll_withValidPageable_returnsPageOfBookDto() {
         Book book1 = new Book();
         book1.setId(1L);
@@ -125,22 +124,26 @@ public class BookServiceTest {
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
 
         Mockito.when(bookRepository.findAll(pageable)).thenReturn(bookPage);
-        Mockito.when(bookMapper.toDto(book1)).thenReturn(new BookDto() {{
-            setId(book1.getId());
-            setTitle(book1.getTitle());
-            setAuthor(book1.getAuthor());
-            setDescription(book1.getDescription());
-            setPrice(book1.getPrice());
-            setIsbn(book1.getIsbn());
-        }});
-        Mockito.when(bookMapper.toDto(book2)).thenReturn(new BookDto() {{
-            setId(book2.getId());
-            setTitle(book2.getTitle());
-            setAuthor(book2.getAuthor());
-            setDescription(book2.getDescription());
-            setPrice(book2.getPrice());
-            setIsbn(book2.getIsbn());
-        }});
+        Mockito.when(bookMapper.toDto(book1)).thenReturn(new BookDto() {
+            {
+                setId(book1.getId());
+                setTitle(book1.getTitle());
+                setAuthor(book1.getAuthor());
+                setDescription(book1.getDescription());
+                setPrice(book1.getPrice());
+                setIsbn(book1.getIsbn());
+            }
+        });
+        Mockito.when(bookMapper.toDto(book2)).thenReturn(new BookDto() {
+            {
+                setId(book2.getId());
+                setTitle(book2.getTitle());
+                setAuthor(book2.getAuthor());
+                setDescription(book2.getDescription());
+                setPrice(book2.getPrice());
+                setIsbn(book2.getIsbn());
+            }
+        });
 
         Page<BookDto> actualPage = bookService.findAll(pageable);
         Assertions.assertEquals(2, actualPage.getTotalElements());
@@ -152,8 +155,8 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("""
-        Should return BookDto when getById is called with existing ID
-""")
+            Should return BookDto when getById is called with existing ID
+            """)
     void getById_withValidId_returnsBookDto() {
         Long id = 1L;
         Book book = new Book();
@@ -175,16 +178,16 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("""
-        Should update book when update is called with valid ID and request DTO
-        and return updated BookDto
-""")
+            Should update book when update is called with valid ID and request DTO
+            and return updated BookDto
+            """)
     void update_withValidIdAndRequest_returnsUpdatedBookDto() {
-        Long id = 1L;
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
         requestDto.setTitle("Updated Title");
         requestDto.setAuthor("Updated Author");
         requestDto.setCategoryIds(Set.of(1L));
 
+        Long id = 1L;
         Book existingBook = new Book();
         existingBook.setId(id);
         existingBook.setTitle("Old Title");
@@ -219,18 +222,9 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("""
-    Should return list of BookDto when search is called with valid parameters
-""")
+            Should return list of BookDto when search is called with valid parameters
+            """)
     void search_withValidParams_returnsListOfBookDto() {
-        BookSearchParameters params = new BookSearchParameters(
-                new String[] {"Joshua Bloch"},
-                new String[] {"Effective Java"},
-                new String[] {"Addison-Wesley"},
-                new String[] {"Programming"},
-                new String[] {"cover.jpg"},
-                new String[] {"45.00"}
-        );
-
         Book book = new Book();
         book.setId(1L);
         book.setTitle("Effective Java");
@@ -244,6 +238,15 @@ public class BookServiceTest {
         @SuppressWarnings("unchecked")
         Specification<Book> spec = Mockito.mock(Specification.class);
 
+        BookSearchParameters params = new BookSearchParameters(
+                new String[]{"Joshua Bloch"},
+                new String[]{"Effective Java"},
+                new String[]{"Addison-Wesley"},
+                new String[]{"Programming"},
+                new String[]{"cover.jpg"},
+                new String[]{"45.00"}
+        );
+
         Mockito.when(bookSpecificationBuilder.build(params)).thenReturn(spec);
         Mockito.when(bookRepository.findAll(spec)).thenReturn(books);
         Mockito.when(bookMapper.toDto(book)).thenReturn(dto);
@@ -256,8 +259,9 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("""
-        Should return list of BookDtoWithoutCategoryIds when findAllByCategoryId is called with valid ID
-""")
+             Should return list of BookDtoWithoutCategoryIds\s
+             when findAllByCategoryId is called with valid ID
+            \s""")
     void findAllByCategoryId_withValidId_returnsListOfBookDtoWithoutCategoryIds() {
         Long categoryId = 1L;
         Category category = new Category();
@@ -272,9 +276,12 @@ public class BookServiceTest {
         dto.setId(book.getId());
         dto.setTitle(book.getTitle());
 
-        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(java.util.Optional.of(category));
-        Mockito.when(bookRepository.findAllByCategories_Id(categoryId)).thenReturn(List.of(book));
-        Mockito.when(bookMapper.toDtoWithoutCategories(book)).thenReturn(dto);
+        Mockito.when(categoryRepository.findById(categoryId))
+                .thenReturn(java.util.Optional.of(category));
+        Mockito.when(bookRepository.findAllByCategories_Id(categoryId))
+                .thenReturn(List.of(book));
+        Mockito.when(bookMapper.toDtoWithoutCategories(book))
+                .thenReturn(dto);
 
         List<BookDtoWithoutCategoryIds> result = bookService.findAllByCategoryId(categoryId);
         Assertions.assertEquals(1, result.size());

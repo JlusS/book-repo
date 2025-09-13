@@ -1,11 +1,24 @@
 package bookrepo.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import bookrepo.dto.book.BookDto;
 import bookrepo.dto.book.BookDtoWithoutCategoryIds;
 import bookrepo.dto.book.BookSearchParameters;
 import bookrepo.dto.book.CreateBookRequestDto;
 import bookrepo.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,18 +34,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -88,7 +89,9 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), BookDto.class);
+        BookDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), BookDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected.getId(), actual.getId());
         Assertions.assertEquals(expected.getTitle(), actual.getTitle());
@@ -112,7 +115,9 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto[] books = objectMapper.readValue(result.getResponse().getContentAsString(), BookDto[].class);
+        BookDto[] books = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), BookDto[].class);
         Assertions.assertNotNull(books);
         Assertions.assertEquals(1, books.length);
         Assertions.assertEquals("Test Book", books[0].getTitle());
@@ -139,7 +144,9 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), BookDto.class);
+        BookDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), BookDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.getId());
         Assertions.assertEquals(expected.getTitle(), actual.getTitle());
@@ -179,7 +186,9 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), BookDto.class);
+        BookDto actual = objectMapper.readValue(result
+                .getResponse()
+                .getContentAsString(), BookDto.class);
         Assertions.assertNotNull(actual);
         Assertions.assertEquals(expected.getTitle(), actual.getTitle());
         Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());

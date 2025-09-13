@@ -25,10 +25,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class BookRepositoryTest {
 
     @Autowired
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Test
     @DisplayName("Find all books by category ID")

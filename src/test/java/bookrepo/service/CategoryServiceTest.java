@@ -6,6 +6,8 @@ import bookrepo.mapper.CategoryMapper;
 import bookrepo.model.Category;
 import bookrepo.repository.category.CategoryRepository;
 import bookrepo.service.impl.CategoryServiceImpl;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceTest {
@@ -115,7 +114,10 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should update category and return updated CategoryDto when update is called with valid ID and DTO")
+    @DisplayName("""
+             Should update category and return updated\s
+             CategoryDto when update is called with valid ID and DTO
+            \s""")
     void update_withValidIdAndDto_returnsUpdatedCategoryDto() {
         Long id = 1L;
         CategoryDto dto = new CategoryDto();
@@ -139,7 +141,10 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("Should throw EntityNotFoundException when update is called with non-existing ID")
+    @DisplayName("""
+             Should throw EntityNotFoundException\s
+             when update is called with non-existing ID
+            \s""")
     void update_withInvalidId_throwsException() {
         Long id = 999L;
         CategoryDto dto = new CategoryDto();
@@ -147,6 +152,7 @@ public class CategoryServiceTest {
 
         Mockito.when(categoryRepository.findById(id)).thenReturn(Optional.empty());
 
-        Assertions.assertThrows(EntityNotFoundException.class, () -> categoryService.update(id, dto));
+        Assertions.assertThrows(EntityNotFoundException.class, () ->
+                categoryService.update(id, dto));
     }
 }
