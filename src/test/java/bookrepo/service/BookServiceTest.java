@@ -1,5 +1,9 @@
 package bookrepo.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import bookrepo.dto.book.BookDto;
 import bookrepo.dto.book.BookDtoWithoutCategoryIds;
 import bookrepo.dto.book.BookSearchParameters;
@@ -11,11 +15,10 @@ import bookrepo.repository.book.BookRepository;
 import bookrepo.repository.book.BookSpecificationBuilder;
 import bookrepo.repository.category.CategoryRepository;
 import bookrepo.service.impl.BookServiceImpl;
-import java.math.BigDecimal;
+import bookrepo.util.TestUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,48 +56,32 @@ public class BookServiceTest {
             and return the corresponding BookDto with correct category IDs
             """)
     void save_withValidRequest_returnsBookDtoWithCategoryIds() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle("Effective Java");
-        requestDto.setAuthor("Joshua Bloch");
-        requestDto.setDescription("A comprehensive guide to best practices in Java programming.");
-        requestDto.setPrice(BigDecimal.valueOf(45.00));
-        requestDto.setIsbn("978-0134686097");
-        requestDto.setCategoryIds(Set.of(1L, 2L));
+        // Given
+        CreateBookRequestDto requestDto = TestUtil.createValidBookRequestDto();
+        Book book = TestUtil.createBookFromRequest(requestDto);
 
-        Book book = new Book();
-        book.setTitle(requestDto.getTitle());
-        book.setAuthor(requestDto.getAuthor());
-        book.setDescription(requestDto.getDescription());
-        book.setPrice(requestDto.getPrice());
-        book.setIsbn(requestDto.getIsbn());
-
-        Category category1 = new Category();
-        category1.setId(1L);
-        category1.setName("Programming");
-
-        Category category2 = new Category();
-        category2.setId(2L);
-        category2.setName("Java");
-
-        Set<Category> categories = Set.of(category1, category2);
+        Category categoryProgramming = TestUtil.createProgrammingCategory();
+        Category categoryJava = TestUtil.createJavaCategory();
+        Set<Category> categories = Set.of(categoryProgramming, categoryJava);
         book.setCategories(categories);
 
-        BookDto expectedDto = new BookDto();
-        expectedDto.setTitle(book.getTitle());
-        expectedDto.setAuthor(book.getAuthor());
-        expectedDto.setDescription(book.getDescription());
-        expectedDto.setPrice(book.getPrice());
-        expectedDto.setIsbn(book.getIsbn());
-        expectedDto.setCategoryIds(Set.of(1L, 2L));
+        BookDto expectedDto = TestUtil.createExpectedBookDto(book);
 
-        Mockito.when(bookMapper.toModel(requestDto)).thenReturn(book);
-        Mockito.when(categoryRepository.findAllById(requestDto.getCategoryIds()))
+        when(bookMapper.toModel(requestDto)).thenReturn(book);
+        when(categoryRepository.findAllById(requestDto.getCategoryIds()))
                 .thenReturn(new ArrayList<>(categories));
-        Mockito.when(bookRepository.save(book)).thenReturn(book);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(expectedDto);
+        when(bookRepository.save(book)).thenReturn(book);
+        when(bookMapper.toDto(book)).thenReturn(expectedDto);
 
+        // When
         BookDto actualDto = bookService.save(requestDto);
-        Assertions.assertEquals(expectedDto, actualDto);
+
+        // Then
+        assertEquals(expectedDto, actualDto);
+        verify(bookMapper).toModel(requestDto);
+        verify(categoryRepository).findAllById(requestDto.getCategoryIds());
+        verify(bookRepository).save(book);
+        verify(bookMapper).toDto(book);
     }
 
     @Test
@@ -103,54 +90,34 @@ public class BookServiceTest {
             and return the corresponding Page of BookDto
             """)
     void findAll_withValidPageable_returnsPageOfBookDto() {
-        Book book1 = new Book();
-        book1.setId(1L);
-        book1.setTitle("Effective Java");
-        book1.setAuthor("Joshua Bloch");
-        book1.setDescription("A comprehensive guide to best practices in Java programming.");
-        book1.setPrice(BigDecimal.valueOf(45.00));
-        book1.setIsbn("978-0134686097");
-
-        Book book2 = new Book();
-        book2.setId(2L);
-        book2.setTitle("Clean Code");
-        book2.setAuthor("Robert C. Martin");
-        book2.setDescription("A Handbook of Agile Software Craftsmanship.");
-        book2.setPrice(BigDecimal.valueOf(40.00));
-        book2.setIsbn("978-0132350884");
+        // Given
+        Book book1 = TestUtil.createBookEffectiveJava();
+        Book book2 = TestUtil.createBookCleanCode();
 
         Pageable pageable = PageRequest.of(0, 10);
         List<Book> books = List.of(book1, book2);
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
 
-        Mockito.when(bookRepository.findAll(pageable)).thenReturn(bookPage);
-        Mockito.when(bookMapper.toDto(book1)).thenReturn(new BookDto() {
-            {
-                setId(book1.getId());
-                setTitle(book1.getTitle());
-                setAuthor(book1.getAuthor());
-                setDescription(book1.getDescription());
-                setPrice(book1.getPrice());
-                setIsbn(book1.getIsbn());
-            }
-        });
-        Mockito.when(bookMapper.toDto(book2)).thenReturn(new BookDto() {
-            {
-                setId(book2.getId());
-                setTitle(book2.getTitle());
-                setAuthor(book2.getAuthor());
-                setDescription(book2.getDescription());
-                setPrice(book2.getPrice());
-                setIsbn(book2.getIsbn());
-            }
-        });
+        BookDto dto1 = TestUtil.createBookDtoEffectiveJava(book1);
+        BookDto dto2 = TestUtil.createBookDtoCleanCode(book2);
 
+        when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+        when(bookMapper.toDto(book1)).thenReturn(dto1);
+        when(bookMapper.toDto(book2)).thenReturn(dto2);
+
+        // When
         Page<BookDto> actualPage = bookService.findAll(pageable);
-        Assertions.assertEquals(2, actualPage.getTotalElements());
-        Assertions.assertEquals(1, actualPage.getTotalPages());
-        Assertions.assertEquals(2, actualPage.getContent().size());
-        Assertions.assertEquals("Effective Java", actualPage.getContent().get(0).getTitle());
-        Assertions.assertEquals("Clean Code", actualPage.getContent().get(1).getTitle());
+
+        // Then
+        assertEquals(2, actualPage.getTotalElements());
+        assertEquals(1, actualPage.getTotalPages());
+        assertEquals(2, actualPage.getContent().size());
+        assertEquals("Effective Java", actualPage.getContent().get(0).getTitle());
+        assertEquals("Clean Code", actualPage.getContent().get(1).getTitle());
+
+        verify(bookRepository).findAll(pageable);
+        verify(bookMapper).toDto(book1);
+        verify(bookMapper).toDto(book2);
     }
 
     @Test
@@ -158,22 +125,21 @@ public class BookServiceTest {
             Should return BookDto when getById is called with existing ID
             """)
     void getById_withValidId_returnsBookDto() {
+        // Given
         Long id = 1L;
-        Book book = new Book();
-        book.setId(id);
-        book.setTitle("Effective Java");
-        book.setAuthor("Joshua Bloch");
+        Book book = TestUtil.createBookEffectiveJava();
+        BookDto expectedDto = TestUtil.createBookDtoEffectiveJava(book);
 
-        BookDto expectedDto = new BookDto();
-        expectedDto.setId(id);
-        expectedDto.setTitle(book.getTitle());
-        expectedDto.setAuthor(book.getAuthor());
+        when(bookRepository.findById(id)).thenReturn(java.util.Optional.of(book));
+        when(bookMapper.toDto(book)).thenReturn(expectedDto);
 
-        Mockito.when(bookRepository.findById(id)).thenReturn(java.util.Optional.of(book));
-        Mockito.when(bookMapper.toDto(book)).thenReturn(expectedDto);
-
+        // When
         BookDto actualDto = bookService.getById(id);
-        Assertions.assertEquals(expectedDto, actualDto);
+
+        // Then
+        assertEquals(expectedDto, actualDto);
+        verify(bookRepository).findById(id);
+        verify(bookMapper).toDto(book);
     }
 
     @Test
@@ -182,20 +148,17 @@ public class BookServiceTest {
             and return updated BookDto
             """)
     void update_withValidIdAndRequest_returnsUpdatedBookDto() {
+        // Given
         CreateBookRequestDto requestDto = new CreateBookRequestDto();
         requestDto.setTitle("Updated Title");
         requestDto.setAuthor("Updated Author");
         requestDto.setCategoryIds(Set.of(1L));
 
         Long id = 1L;
-        Book existingBook = new Book();
-        existingBook.setId(id);
+        Book existingBook = TestUtil.createBookEffectiveJava();
         existingBook.setTitle("Old Title");
 
-        Category category = new Category();
-        category.setId(1L);
-        category.setName("Programming");
-
+        Category category = TestUtil.createProgrammingCategory();
         Set<Category> categories = Set.of(category);
         existingBook.setCategories(categories);
 
@@ -205,19 +168,22 @@ public class BookServiceTest {
         expectedDto.setAuthor(requestDto.getAuthor());
         expectedDto.setCategoryIds(Set.of(1L));
 
-        Mockito.when(bookRepository.findById(id)).thenReturn(java.util.Optional.of(existingBook));
-        Mockito.doAnswer(invocation -> {
-            existingBook.setTitle(requestDto.getTitle());
-            existingBook.setAuthor(requestDto.getAuthor());
-            return null;
-        }).when(bookMapper).updateModelFromDto(requestDto, existingBook);
-        Mockito.when(categoryRepository.findAllById(requestDto.getCategoryIds()))
+        when(bookRepository.findById(id)).thenReturn(java.util.Optional.of(existingBook));
+        when(categoryRepository.findAllById(requestDto.getCategoryIds()))
                 .thenReturn(new ArrayList<>(categories));
-        Mockito.when(bookRepository.save(existingBook)).thenReturn(existingBook);
-        Mockito.when(bookMapper.toDto(existingBook)).thenReturn(expectedDto);
+        when(bookRepository.save(existingBook)).thenReturn(existingBook);
+        when(bookMapper.toDto(existingBook)).thenReturn(expectedDto);
 
+        // When
         BookDto actualDto = bookService.update(id, requestDto);
-        Assertions.assertEquals(expectedDto, actualDto);
+
+        // Then
+        assertEquals(expectedDto, actualDto);
+        verify(bookRepository).findById(id);
+        verify(bookMapper).updateModelFromDto(requestDto, existingBook);
+        verify(categoryRepository).findAllById(requestDto.getCategoryIds());
+        verify(bookRepository).save(existingBook);
+        verify(bookMapper).toDto(existingBook);
     }
 
     @Test
@@ -225,14 +191,9 @@ public class BookServiceTest {
             Should return list of BookDto when search is called with valid parameters
             """)
     void search_withValidParams_returnsListOfBookDto() {
-        Book book = new Book();
-        book.setId(1L);
-        book.setTitle("Effective Java");
-
-        BookDto dto = new BookDto();
-        dto.setId(book.getId());
-        dto.setTitle(book.getTitle());
-
+        // Given
+        Book book = TestUtil.createBookEffectiveJava();
+        BookDto dto = TestUtil.createBookDtoEffectiveJava(book);
         List<Book> books = List.of(book);
 
         @SuppressWarnings("unchecked")
@@ -247,14 +208,19 @@ public class BookServiceTest {
                 new String[]{"45.00"}
         );
 
-        Mockito.when(bookSpecificationBuilder.build(params)).thenReturn(spec);
-        Mockito.when(bookRepository.findAll(spec)).thenReturn(books);
-        Mockito.when(bookMapper.toDto(book)).thenReturn(dto);
+        when(bookSpecificationBuilder.build(params)).thenReturn(spec);
+        when(bookRepository.findAll(spec)).thenReturn(books);
+        when(bookMapper.toDto(book)).thenReturn(dto);
 
+        // When
         List<BookDto> result = bookService.search(params);
 
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals("Effective Java", result.get(0).getTitle());
+        // Then
+        assertEquals(1, result.size());
+        assertEquals("Effective Java", result.get(0).getTitle());
+        verify(bookSpecificationBuilder).build(params);
+        verify(bookRepository).findAll(spec);
+        verify(bookMapper).toDto(book);
     }
 
     @Test
@@ -263,28 +229,27 @@ public class BookServiceTest {
              when findAllByCategoryId is called with valid ID
             \s""")
     void findAllByCategoryId_withValidId_returnsListOfBookDtoWithoutCategoryIds() {
+        // Given
         Long categoryId = 1L;
-        Category category = new Category();
-        category.setId(categoryId);
-        category.setName("Programming");
+        Category category = TestUtil.createProgrammingCategory();
+        Book book = TestUtil.createBookEffectiveJava();
+        BookDtoWithoutCategoryIds dto = TestUtil.createBookDtoWithoutCategories(book);
 
-        Book book = new Book();
-        book.setId(1L);
-        book.setTitle("Effective Java");
-
-        BookDtoWithoutCategoryIds dto = new BookDtoWithoutCategoryIds();
-        dto.setId(book.getId());
-        dto.setTitle(book.getTitle());
-
-        Mockito.when(categoryRepository.findById(categoryId))
+        when(categoryRepository.findById(categoryId))
                 .thenReturn(java.util.Optional.of(category));
-        Mockito.when(bookRepository.findAllByCategories_Id(categoryId))
+        when(bookRepository.findAllByCategories_Id(categoryId))
                 .thenReturn(List.of(book));
-        Mockito.when(bookMapper.toDtoWithoutCategories(book))
+        when(bookMapper.toDtoWithoutCategories(book))
                 .thenReturn(dto);
 
+        // When
         List<BookDtoWithoutCategoryIds> result = bookService.findAllByCategoryId(categoryId);
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertEquals("Effective Java", result.get(0).getTitle());
+
+        // Then
+        assertEquals(1, result.size());
+        assertEquals("Effective Java", result.get(0).getTitle());
+        verify(categoryRepository).findById(categoryId);
+        verify(bookRepository).findAllByCategories_Id(categoryId);
+        verify(bookMapper).toDtoWithoutCategories(book);
     }
 }

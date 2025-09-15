@@ -1,9 +1,14 @@
 package bookrepo.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static bookrepo.util.TestUtil.createBookEffectiveJava;
+import static bookrepo.util.TestUtil.createBookRequestDto;
+import static bookrepo.util.TestUtil.createExpectedBookDto;
+import static bookrepo.util.TestUtil.createJavaCategory;
+import static bookrepo.util.TestUtil.createProgrammingCategory;
+import static bookrepo.util.TestUtil.createValidBookRequestDto;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,23 +17,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bookrepo.dto.book.BookDto;
 import bookrepo.dto.book.BookDtoWithoutCategoryIds;
-import bookrepo.dto.book.BookSearchParameters;
 import bookrepo.dto.book.CreateBookRequestDto;
-import bookrepo.service.BookService;
+import bookrepo.model.Book;
+import bookrepo.model.Category;
+import bookrepo.repository.book.BookRepository;
+import bookrepo.repository.category.CategoryRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,6 +42,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class BookControllerTest {
 
     @Autowired
@@ -46,17 +51,24 @@ class BookControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private BookService bookService;
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @WithMockUser(username = "user", authorities = {"USER"})
     @Test
     @DisplayName("Get all books")
     void findAll_WithUserRole_ShouldReturnPageOfBooks() throws Exception {
         // Given
-        BookDto bookDto = createBookDto();
-        Page<BookDto> page = new PageImpl<>(List.of(bookDto));
-        when(bookService.findAll(any(Pageable.class))).thenReturn(page);
+        Category categoryProgramming = categoryRepository.save(createProgrammingCategory());
+        Category categoryJava = categoryRepository.save(createJavaCategory());
+        Book book = createBookEffectiveJava();
+        book.setCategories(Set.of(categoryProgramming, categoryJava));
+        bookRepository.save(book);
+
+        BookDto expectedDto = createExpectedBookDto(book);
 
         // When
         MvcResult result = mockMvc.perform(get("/books")
@@ -65,14 +77,18 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+        // Then
         String responseContent = result.getResponse().getContentAsString();
 
-        Assertions.assertTrue(responseContent.contains("Test Book"));
-        Assertions.assertTrue(responseContent.contains("Test Author"));
-        Assertions.assertTrue(responseContent.contains("29.99"));
+        JsonNode root = objectMapper.readTree(responseContent);
+        List<BookDto> books = objectMapper.readValue(
+                root.get("content").toString(),
+                new TypeReference<List<BookDto>>() {
+                }
+        );
 
-        Assertions.assertTrue(responseContent.contains("\"title\":\"Test Book\""));
-        Assertions.assertTrue(responseContent.contains("\"author\":\"Test Author\""));
+        assertThat(books).hasSize(1);
+        assertThat(books.get(0).getTitle()).isEqualTo("Effective Java");
     }
 
     @WithMockUser(username = "user", authorities = {"USER"})
@@ -80,23 +96,24 @@ class BookControllerTest {
     @DisplayName("Get book by ID")
     void getBookById_WithUserRole_ShouldReturnBook() throws Exception {
         // Given
-        BookDto expected = createBookDto();
-        when(bookService.getById(1L)).thenReturn(expected);
+        Category category = categoryRepository.save(createProgrammingCategory());
+        Book book = createBookEffectiveJava();
+        book.setCategories(Set.of(category));
+        Book savedBook = bookRepository.save(book);
 
         // When
-        MvcResult result = mockMvc.perform(get("/books/1"))
+        MvcResult result = mockMvc.perform(get("/books/{id}", savedBook.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result
-                .getResponse()
-                .getContentAsString(), BookDto.class);
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(expected.getId(), actual.getId());
-        Assertions.assertEquals(expected.getTitle(), actual.getTitle());
-        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertEquals(expected.getPrice(), actual.getPrice());
+        BookDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BookDto.class
+        );
+        assertNotNull(actual);
+        assertEquals(savedBook.getTitle(), actual.getTitle());
+        assertEquals(savedBook.getAuthor(), actual.getAuthor());
     }
 
     @WithMockUser(username = "user", authorities = {"USER"})
@@ -104,23 +121,23 @@ class BookControllerTest {
     @DisplayName("Search books")
     void searchBooks_WithUserRole_ShouldReturnBooks() throws Exception {
         // Given
-        BookDto bookDto = createBookDto();
-        when(bookService.search(any(BookSearchParameters.class))).thenReturn(List.of(bookDto));
+        bookRepository.save(createBookEffectiveJava());
 
         // When
         MvcResult result = mockMvc.perform(get("/books/search")
-                        .param("titles", "Test")
-                        .param("authors", "Author"))
+                        .param("titles", "Effective Java")
+                        .param("authors", "Joshua Bloch"))
                 .andExpect(status().isOk())
                 .andReturn();
 
         // Then
-        BookDto[] books = objectMapper.readValue(result
-                .getResponse()
-                .getContentAsString(), BookDto[].class);
-        Assertions.assertNotNull(books);
-        Assertions.assertEquals(1, books.length);
-        Assertions.assertEquals("Test Book", books[0].getTitle());
+        BookDto[] books = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BookDto[].class
+        );
+        assertNotNull(books);
+        assertEquals(1, books.length);
+        assertEquals("Effective Java", books[0].getTitle());
     }
 
     @WithMockUser(username = "admin", authorities = {"ADMIN"})
@@ -128,11 +145,10 @@ class BookControllerTest {
     @DisplayName("Create a new book")
     void createBook_ValidRequestDto_Success() throws Exception {
         // Given
-        CreateBookRequestDto requestDto = createBookRequestDto();
-        BookDto expected = createBookDto();
-
+        Category categoryProgramming = categoryRepository.save(createProgrammingCategory());
+        Category categoryJava = categoryRepository.save(createJavaCategory());
+        CreateBookRequestDto requestDto = createValidBookRequestDto();
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
-        when(bookService.save(any(CreateBookRequestDto.class))).thenReturn(expected);
 
         // When
         MvcResult result = mockMvc.perform(
@@ -144,25 +160,29 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result
-                .getResponse()
-                .getContentAsString(), BookDto.class);
-        Assertions.assertNotNull(actual);
-        Assertions.assertNotNull(actual.getId());
-        Assertions.assertEquals(expected.getTitle(), actual.getTitle());
-        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertEquals(expected.getPrice(), actual.getPrice());
+        BookDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BookDto.class
+        );
+        assertNotNull(actual);
+        assertEquals(requestDto.getTitle(), actual.getTitle());
+        assertEquals(requestDto.getAuthor(), actual.getAuthor());
+        assertEquals(1, bookRepository.count());
     }
 
     @WithMockUser(username = "admin", authorities = {"ADMIN"})
     @Test
     @DisplayName("Delete book by ID")
     void deleteBookById_WithAdminRole_ShouldDeleteBook() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/books/1"))
+        // Given
+        Book book = bookRepository.save(createBookEffectiveJava());
+
+        // When
+        mockMvc.perform(delete("/books/{id}", book.getId()))
                 .andExpect(status().isNoContent());
 
-        verify(bookService).deleteById(1L);
+        // Then
+        assertEquals(0, bookRepository.count());
     }
 
     @WithMockUser(username = "admin", authorities = {"ADMIN"})
@@ -170,15 +190,15 @@ class BookControllerTest {
     @DisplayName("Update book")
     void updateBook_WithAdminRole_ShouldUpdateBook() throws Exception {
         // Given
+        Book book = bookRepository.save(createBookEffectiveJava());
         CreateBookRequestDto requestDto = createBookRequestDto();
-        BookDto expected = createBookDto();
+        requestDto.setTitle("Updated Title");
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
-        when(bookService.update(eq(1L), any(CreateBookRequestDto.class))).thenReturn(expected);
 
         // When
         MvcResult result = mockMvc.perform(
-                        put("/books/1")
+                        put("/books/{id}", book.getId())
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -186,24 +206,21 @@ class BookControllerTest {
                 .andReturn();
 
         // Then
-        BookDto actual = objectMapper.readValue(result
-                .getResponse()
-                .getContentAsString(), BookDto.class);
-        Assertions.assertNotNull(actual);
-        Assertions.assertEquals(expected.getTitle(), actual.getTitle());
-        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertEquals(expected.getPrice(), actual.getPrice());
+        BookDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                BookDto.class
+        );
+        assertNotNull(actual);
+        assertEquals("Updated Title", actual.getTitle());
     }
 
     @WithMockUser(username = "user", authorities = {"USER"})
     @Test
     @DisplayName("Create book with USER role should return forbidden")
     void createBook_WithUserRole_ShouldReturnForbidden() throws Exception {
-        // Given
         CreateBookRequestDto requestDto = createBookRequestDto();
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
-        // When & Then
         mockMvc.perform(
                         post("/books")
                                 .content(jsonRequest)
@@ -216,8 +233,7 @@ class BookControllerTest {
     @Test
     @DisplayName("Delete book with USER role should return forbidden")
     void deleteBook_WithUserRole_ShouldReturnForbidden() throws Exception {
-        // When & Then
-        mockMvc.perform(delete("/books/1"))
+        mockMvc.perform(delete("/books/{id}", 1L))
                 .andExpect(status().isForbidden());
     }
 
@@ -233,11 +249,13 @@ class BookControllerTest {
     @DisplayName("Get books by category ID")
     void getBooksByCategoryId_WithUserRole_ShouldReturnBooks() throws Exception {
         // Given
-        BookDtoWithoutCategoryIds bookDto = createBookDtoWithoutCategoryIds();
-        when(bookService.findAllByCategoryId(1L)).thenReturn(List.of(bookDto));
+        Category category = categoryRepository.save(createProgrammingCategory());
+        Book book = createBookEffectiveJava();
+        book.setCategories(Set.of(category));
+        bookRepository.save(book);
 
         // When
-        MvcResult result = mockMvc.perform(get("/categories/1/books"))
+        MvcResult result = mockMvc.perform(get("/categories/{id}/books", category.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -246,45 +264,8 @@ class BookControllerTest {
                 result.getResponse().getContentAsString(),
                 BookDtoWithoutCategoryIds[].class
         );
-        Assertions.assertNotNull(books);
-        Assertions.assertEquals(1, books.length);
-        Assertions.assertEquals("Test Book", books[0].getTitle());
-    }
-
-    private BookDto createBookDto() {
-        BookDto dto = new BookDto();
-        dto.setId(1L);
-        dto.setTitle("Test Book");
-        dto.setAuthor("Test Author");
-        dto.setIsbn("ISBN123");
-        dto.setPrice(BigDecimal.valueOf(29.99));
-        dto.setDescription("Test Description");
-        dto.setCoverImage("cover.jpg");
-        dto.setCategoryIds(Set.of(1L));
-        return dto;
-    }
-
-    private BookDtoWithoutCategoryIds createBookDtoWithoutCategoryIds() {
-        BookDtoWithoutCategoryIds dto = new BookDtoWithoutCategoryIds();
-        dto.setId(1L);
-        dto.setTitle("Test Book");
-        dto.setAuthor("Test Author");
-        dto.setIsbn("ISBN123");
-        dto.setPrice(BigDecimal.valueOf(29.99));
-        dto.setDescription("Test Description");
-        dto.setCoverImage("cover.jpg");
-        return dto;
-    }
-
-    private CreateBookRequestDto createBookRequestDto() {
-        CreateBookRequestDto dto = new CreateBookRequestDto();
-        dto.setTitle("Test Book");
-        dto.setAuthor("Test Author");
-        dto.setIsbn("ISBN123");
-        dto.setPrice(BigDecimal.valueOf(29.99));
-        dto.setDescription("Test Description");
-        dto.setCoverImage("cover.jpg");
-        dto.setCategoryIds(Set.of(1L));
-        return dto;
+        assertNotNull(books);
+        assertEquals(1, books.length);
+        assertEquals(book.getTitle(), books[0].getTitle());
     }
 }
