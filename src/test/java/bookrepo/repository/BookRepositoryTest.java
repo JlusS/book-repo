@@ -1,27 +1,24 @@
 package bookrepo.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import bookrepo.model.Book;
 import bookrepo.model.Category;
 import bookrepo.repository.book.BookRepository;
 import bookrepo.repository.category.CategoryRepository;
-import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
-@Testcontainers
 public class BookRepositoryTest {
 
     @Autowired
@@ -49,7 +46,7 @@ public class BookRepositoryTest {
 
         List<Book> actual = bookRepository.findAllByCategories_Id(savedCategory.getId());
 
-        Assertions.assertEquals(1, actual.size());
-        Assertions.assertEquals(savedBook.getId(), actual.get(0).getId());
+        assertEquals(1, actual.size());
+        assertEquals(savedBook.getId(), actual.get(0).getId());
     }
 }

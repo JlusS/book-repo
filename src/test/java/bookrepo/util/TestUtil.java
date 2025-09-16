@@ -108,31 +108,6 @@ public class TestUtil {
         return dto;
     }
 
-    public static BookDto createBookDto() {
-        BookDto dto = new BookDto();
-        dto.setId(1L);
-        dto.setTitle("Test Book");
-        dto.setAuthor("Test Author");
-        dto.setIsbn("ISBN123");
-        dto.setPrice(BigDecimal.valueOf(29.99));
-        dto.setDescription("Test Description");
-        dto.setCoverImage("cover.jpg");
-        dto.setCategoryIds(Set.of(1L));
-        return dto;
-    }
-
-    public static BookDtoWithoutCategoryIds createBookDtoWithoutCategoryIds() {
-        BookDtoWithoutCategoryIds dto = new BookDtoWithoutCategoryIds();
-        dto.setId(1L);
-        dto.setTitle("Test Book");
-        dto.setAuthor("Test Author");
-        dto.setIsbn("ISBN123");
-        dto.setPrice(BigDecimal.valueOf(29.99));
-        dto.setDescription("Test Description");
-        dto.setCoverImage("cover.jpg");
-        return dto;
-    }
-
     public static CreateBookRequestDto createBookRequestDto() {
         CreateBookRequestDto dto = new CreateBookRequestDto();
         dto.setTitle("Test Book");
