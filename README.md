@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/22389320/README.md)
 # 📚 Book-Repo
 *Empowering Discovery, Simplifying Your Book Journey*
 
@@ -9,9 +8,34 @@
 
 ---
 
-## 📖 Overview  
+## 📖 Overview
+
 **Book-Repo** is a full-featured **online book store application** built with **Java & Spring Boot**.  
 It demonstrates best practices for modern backend development: modular architecture, containerized deployment, and comprehensive testing.  
+
+---
+
+## 🛠 Technology Stack  
+| Technology              | Version   |
+|--------------------------|-----------|
+| Java                    | 17        |
+| Spring Boot             | 3.3.3     |
+| Spring Security         | bundled   |
+| Spring Data JPA         | bundled   |
+| Spring Validation       | bundled   |
+| Springdoc OpenAPI       | 2.1.0     |
+| Liquibase               | latest    |
+| MapStruct               | 1.5.5.Final |
+| Lombok                  | 1.18.36   |
+| JWT (jjwt)              | 0.11.5    |
+| Hibernate Validator     | bundled   |
+| MySQL Connector/J       | 8.4.0 / 8.0.33 |
+| Docker Compose Support  | 3.1.1     |
+| Testcontainers (core)   | 1.19.0    |
+| Testcontainers BOM      | 1.21.3    |
+| JUnit (Spring Boot Test)| bundled   |
+| Maven Compiler Plugin   | 3.3.0+    |
+| Maven Checkstyle Plugin | 3.3.0     |
 
 ### ✨ Key Features  
 - 🛠 **Dependency Management**: Maven + Spring Boot, Liquibase, MapStruct, JWT, Testcontainers  
@@ -20,6 +44,29 @@ It demonstrates best practices for modern backend development: modular architect
 - ⚙ **Modular Architecture**: Specifications & dynamic query building for scalable data access  
 - 🧪 **Extensive Testing**: Unit, integration, and controller tests ensure reliability  
 - 📦 **E-commerce Features**: shopping cart, order management, and user roles  
+
+---
+
+## 🗃 Domain Model  
+- **Book**: stores information about title, author, genre, price, stock, etc.  
+- **User**: application users with roles (ADMIN, CUSTOMER).  
+- **Role**: defines permissions for users.  
+- **Cart**: holds items selected by a user before checkout.  
+- **Order**: finalized purchase with order items, status, and total price.  
+- **OrderItem**: association between books and orders with quantity & price.
+
+---
+
+## 📚 API Documentation
+
+### Swagger/OpenAPI
+Access the interactive API documentation at:  
+**http://localhost:8080/swagger-ui.html**  
+*(when the application is running)*
+
+### Postman Collection
+Find the Postman collection for API testing in the repository:  
+[📥 Download Postman Collection](https://github.com/JlusS/book-repo/tree/main/docs/postman)
 
 ---
 
@@ -40,68 +87,121 @@ git clone https://github.com/JlusS/book-repo
 
 # Navigate into the project
 cd book-repo
-```
 
-Build with **Docker**:  
-```bash
+# Build with Docker:
 docker build -t book-repo .
-```
 
-Or with **Maven**:  
-```bash
+# Or with Maven:
 mvn install
 ```
-
----
-
-## ▶️ Usage  
-
-Run with **Docker**:  
+### ▶️ Usage
 ```bash
+Run with Docker:
 docker run -it book-repo
-```
 
-Run with **Maven**:  
-```bash
+Run with Maven:
 mvn spring-boot:run
+
 ```
+Once running, access:
+Application: http://localhost:8080
 
----
+Swagger UI: http://localhost:8080/swagger-ui.html
 
-## 🧪 Testing  
+API Documentation: http://localhost:8080/v3/api-docs
 
-Run tests with **Maven**:  
+###🧪 Testing
 ```bash
+Run tests with Maven:
 mvn test
-```
 
-Run tests in **Docker**:  
-```bash
+Run tests in Docker:
 docker run -it book-repo mvn test
 ```
 
+# 📚 Book Ordering Service
+
+Spring Boot backend for managing book orders, users, carts, and payments. Built with a modular architecture and robust testing strategy.
+
 ---
 
-## 📂 Project Structure  
+## 🚀 Overview
+
+This project provides a RESTful API for an online book ordering system. It supports user registration, authentication, book browsing, cart management, and order placement.
+
+---
+
+## 🧰 Technology Stack
+
+| Technology       | Version       |
+|------------------|---------------|
+| Java             | 17            |
+| Spring Boot      | 3.1.3         |
+| Spring Security  | 6.1.2         |
+| JPA/Hibernate    | 6.2.4.Final   |
+| Liquibase        | 4.23.1        |
+| MySQL            | 8.0           |
+| Testcontainers   | 1.19.0        |
+| JUnit            | 5             |
+| Mockito          | 5             |
+| Springdoc OpenAPI| 2.1.0         |
+
+---
+
+## 🔍 API Documentation (Swagger)
+
+Swagger UI is available after starting the application:  
+**[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
+
+---
+
+## 📬 Postman Collection
+
+You can find the Postman collection in the following directory:  
+[`docs/postman/book-repo.postman_collection.json`](docs/postman/book-repo.postman_collection.json)
+
+Import it into Postman to quickly test the API endpoints.
+
+---
+[Uploading README (2).md…]()
+
+### 📁 Project Structure
 ```
 book-repo/
- ├── src/               # Source code (controllers, services, repositories, configs)
- ├── resources/         # Application configuration & Liquibase migrations
- ├── Dockerfile         # Docker image build
- ├── docker-compose.yml # Containerized environment setup
- └── pom.xml            # Maven project descriptor
+ ├── src/
+ │   ├── main/java/com/bookrepo/
+ │   │   ├── controller/       # REST controllers (BookController, OrderController, CartController, AuthController)
+ │   │   ├── dto/              # Data Transfer Objects (BookDTO, UserDTO, OrderDTO, etc.)
+ │   │   ├── entity/           # JPA entities (Book, User, Role, Cart, Order, OrderItem)
+ │   │   ├── repository/       # Spring Data repositories for each entity
+ │   │   ├── service/          # Business logic (BookService, OrderService, CartService, UserService)
+ │   │   ├── security/         # JWT configuration, filters, role-based access
+ │   │   └── config/           # Spring and application configuration
+ │   └── test/java/com/bookrepo/
+ │       ├── controller/       # Controller layer tests
+ │       ├── service/          # Unit tests for business logic
+ │       └── repository/       # Database integration tests with Testcontainers
+ ├── resources/
+ │   ├── db/changelog/         # Liquibase migration scripts
+ │   ├── application.yml       # Spring Boot configuration
+ │   └── logback.xml           # Logging configuration
+ ├── docs/
+ │   ├── model-diagram.png     # Entity-Relationship diagram
+ │   └── postman/              # Postman collections for API testing
+ ├── Dockerfile                # Docker image build
+ ├── docker-compose.yml        # Containerized environment setup
+ └── pom.xml                   # Maven project descriptor
 ```
+### 🗺 Roadmap
 
----
+Add payment integration (Stripe/PayPal)
 
-## 🗺 Roadmap  
-- [ ] Implement book search with filters (author, genre, price)  
-- [ ] Add payment integration (Stripe/PayPal)  
-- [ ] Improve admin panel for managing books and users  
-- [ ] Deploy CI/CD pipeline with GitHub Actions  
-- [ ] Add frontend (React/Angular) for full-stack demo  
+Improve admin panel for managing books and users
 
----
+Deploy CI/CD pipeline with GitHub Actions
 
-## 🤝 Contribution  
-Contributions are welcome! Please fork the repository and submit a pull request.  
+Add frontend (React/Angular) for full-stack demo
+
+
+## 🤝 Contribution
+Contributions are welcome! Please fork the repository and submit a pull request.
