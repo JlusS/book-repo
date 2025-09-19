@@ -69,7 +69,7 @@ Import it into Postman to quickly test the API endpoints.
 ---
 ## 📊 Domain Model Diagram
 
-![Domain Model](src/main/java/bookrepo/docs/model-diagram.png)
+![Domain Model](src/main/java/bookrepo/docs/model-diagram.svg)
 
 ---
 
