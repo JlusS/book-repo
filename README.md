@@ -60,7 +60,7 @@ This project provides a RESTful API for an online book ordering system. It suppo
 ## 📬 Postman Collection
 
 You can find the Postman collection in the following directory:  
-[`docs/postmanpostman_collection.json`](docs/postman/postman_collection.json)
+[`docs/postman/postman_collection.json`](docs/postman/postman_collection.json)
 
 Import it into Postman to quickly test the API endpoints.
 
