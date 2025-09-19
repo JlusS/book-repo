@@ -6,36 +6,34 @@
 ![Docker](https://img.shields.io/badge/Docker-Containerization-blue?logo=docker)  
 ![Spring](https://img.shields.io/badge/Spring-Boot-brightgreen?logo=springboot)  
 
----
+# 📚 Book Ordering Service
 
-## 📖 Overview
-
-**Book-Repo** is a full-featured **online book store application** built with **Java & Spring Boot**.  
-It demonstrates best practices for modern backend development: modular architecture, containerized deployment, and comprehensive testing.  
+Spring Boot backend for managing book orders, users, carts, and payments. Built with a modular architecture and robust testing strategy.
 
 ---
 
-## 🛠 Technology Stack  
-| Technology              | Version   |
-|--------------------------|-----------|
-| Java                    | 17        |
-| Spring Boot             | 3.3.3     |
-| Spring Security         | bundled   |
-| Spring Data JPA         | bundled   |
-| Spring Validation       | bundled   |
-| Springdoc OpenAPI       | 2.1.0     |
-| Liquibase               | latest    |
-| MapStruct               | 1.5.5.Final |
-| Lombok                  | 1.18.36   |
-| JWT (jjwt)              | 0.11.5    |
-| Hibernate Validator     | bundled   |
-| MySQL Connector/J       | 8.4.0 / 8.0.33 |
-| Docker Compose Support  | 3.1.1     |
-| Testcontainers (core)   | 1.19.0    |
-| Testcontainers BOM      | 1.21.3    |
-| JUnit (Spring Boot Test)| bundled   |
-| Maven Compiler Plugin   | 3.3.0+    |
-| Maven Checkstyle Plugin | 3.3.0     |
+## 🚀 Overview
+
+This project provides a RESTful API for an online book ordering system. It supports user registration, authentication, book browsing, cart management, and order placement.
+
+---
+
+## 🧰 Technology Stack
+
+| Technology       | Version       |
+|------------------|---------------|
+| Java             | 17            |
+| Spring Boot      | 3.1.3         |
+| Spring Security  | 6.1.2         |
+| JPA/Hibernate    | 6.2.4.Final   |
+| Liquibase        | 4.23.1        |
+| MySQL            | 8.0           |
+| Testcontainers   | 1.19.0        |
+| JUnit            | 5             |
+| Mockito          | 5             |
+| Springdoc OpenAPI| 2.1.0         |
+
+---
 
 ### ✨ Key Features  
 - 🛠 **Dependency Management**: Maven + Spring Boot, Liquibase, MapStruct, JWT, Testcontainers  
@@ -59,14 +57,17 @@ It demonstrates best practices for modern backend development: modular architect
 
 ## 📚 API Documentation
 
-### Swagger/OpenAPI
-Access the interactive API documentation at:  
-**http://localhost:8080/swagger-ui.html**  
-*(when the application is running)*
+## 📬 Postman Collection
 
-### Postman Collection
-Find the Postman collection for API testing in the repository:  
-[📥 Download Postman Collection](https://github.com/JlusS/book-repo/tree/main/docs/postman)
+You can find the Postman collection in the following directory:  
+[`docs/postman/book-repo.postman_collection.json`](docs/postman/postman_collection.json)
+
+Import it into Postman to quickly test the API endpoints.
+
+---
+## 📊 Domain Model Diagram
+
+![Domain Model](docs/model-diagram.png)
 
 ---
 
@@ -118,53 +119,6 @@ mvn test
 Run tests in Docker:
 docker run -it book-repo mvn test
 ```
-
-# 📚 Book Ordering Service
-
-Spring Boot backend for managing book orders, users, carts, and payments. Built with a modular architecture and robust testing strategy.
-
----
-
-## 🚀 Overview
-
-This project provides a RESTful API for an online book ordering system. It supports user registration, authentication, book browsing, cart management, and order placement.
-
----
-
-## 🧰 Technology Stack
-
-| Technology       | Version       |
-|------------------|---------------|
-| Java             | 17            |
-| Spring Boot      | 3.1.3         |
-| Spring Security  | 6.1.2         |
-| JPA/Hibernate    | 6.2.4.Final   |
-| Liquibase        | 4.23.1        |
-| MySQL            | 8.0           |
-| Testcontainers   | 1.19.0        |
-| JUnit            | 5             |
-| Mockito          | 5             |
-| Springdoc OpenAPI| 2.1.0         |
-
----
-
-## 🔍 API Documentation (Swagger)
-
-Swagger UI is available after starting the application:  
-**[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)**
-
----
-
-## 📬 Postman Collection
-
-You can find the Postman collection in the following directory:  
-[`docs/postman/book-repo.postman_collection.json`](docs/postman/book-repo.postman_collection.json)
-
-Import it into Postman to quickly test the API endpoints.
-
----
-[Uploading README (2).md…]()
-
 ### 📁 Project Structure
 ```
 book-repo/
