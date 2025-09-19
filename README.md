@@ -59,7 +59,7 @@ This project provides a RESTful API for an online book ordering system. It suppo
 
 Interactive API docs available via Swagger UI:  
 - [Swagger UI](http://localhost:8080/swagger-ui/index.html)  
-- [OpenAPI JSON](bookrepo/docs/swagger/api-docs.json)
+- [OpenAPI JSON](src/main/java/bookrepo/docs/swagger/api-docs.json)
 
 ## 📬 Postman Collection
 
