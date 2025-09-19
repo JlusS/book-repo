@@ -6,8 +6,6 @@
 ![Docker](https://img.shields.io/badge/Docker-Containerization-blue?logo=docker)  
 ![Spring](https://img.shields.io/badge/Spring-Boot-brightgreen?logo=springboot)  
 
-# 📚 Book Ordering Service
-
 Spring Boot backend for managing book orders, users, carts, and payments. Built with a modular architecture and robust testing strategy.
 
 ---
@@ -115,7 +113,7 @@ Swagger UI: http://localhost:8080/swagger-ui.html
 
 API Documentation: http://localhost:8080/v3/api-docs
 
-###🧪 Testing
+### 🧪 Testing
 ```bash
 Run tests with Maven:
 mvn test
@@ -127,7 +125,7 @@ docker run -it book-repo mvn test
 ```
 book-repo/
  ├── src/
- │   ├── main/java/com/bookrepo/
+ │   ├── main/java/bookrepo/
  │   │   ├── controller/       # REST controllers (BookController, OrderController, CartController, AuthController)
  │   │   ├── dto/              # Data Transfer Objects (BookDTO, UserDTO, OrderDTO, etc.)
  │   │   ├── entity/           # JPA entities (Book, User, Role, Cart, Order, OrderItem)
