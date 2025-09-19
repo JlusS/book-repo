@@ -58,20 +58,20 @@ This project provides a RESTful API for an online book ordering system. It suppo
 ## 📚 API Documentation
 
 Interactive API docs available via Swagger UI:  
-- [Swagger UI](http://localhost:8080/swagger-ui/index.html)  
+- [Swagger UI](http://localhost:8080/api/swagger-ui/index.html#/)  
 - [OpenAPI JSON](src/main/java/bookrepo/docs/swagger/api-docs.json)
 
 ## 📬 Postman Collection
 
 You can find the Postman collection in the following directory:  
-[`src/main/docs/postman/postman_collection.json`](src/main/docs/postman/postman_collection.json)
+[`src/main/docs/postman/postman_collection.json`](src/main/java/bookrepo/docs/postman/postman_collection.json)
 
 Import it into Postman to quickly test the API endpoints.
 
 ---
 ## 📊 Domain Model Diagram
 
-![Domain Model](src/main/docs/swagger/model-diagram.png)
+![Domain Model](src/main/java/bookrepo/docs/model-diagram.png)
 
 ---
 
